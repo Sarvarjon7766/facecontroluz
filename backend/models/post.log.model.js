@@ -18,7 +18,7 @@ const postLogModel = new Schema({
 	},
 	post: {
 		type: Number,
-		enum: [1, 2],
+		enum: [1, 2, 3],
 		default: 1
 	},
 	typeStatus: {

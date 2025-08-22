@@ -238,6 +238,7 @@ const AdminEntryExit = () => {
 			const res = await axios.put(
 				`${import.meta.env.VITE_BASE_URL}/api/user/user-time/${selectedUser.hodimID}`,
 				{
+					qayer: '3',
 					type: modalType,
 					userId: selectedUser._id
 				},

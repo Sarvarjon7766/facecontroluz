@@ -7,6 +7,7 @@ const attendanceSchema = new Schema({
     required: true
   },
 
+  
   date: {
     type: Date,
     required: true

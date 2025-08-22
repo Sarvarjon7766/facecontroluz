@@ -42,7 +42,7 @@ class AttandanceController {
 	async UserEditTime(req, res) {
 		try {
 			const { employee_id } = req.params
-			const { type } = req.body
+			const { type, qayer } = req.body
 			console.log(employee_id)
 			console.log(type)
 			if (!["entry", "exit"].includes(type)) {
@@ -53,6 +53,7 @@ class AttandanceController {
 			}
 			const where = type === "exit" ? "1" : "2"
 			const attendancePayload = {
+				qayer,
 				where,
 				employee_id
 			}
