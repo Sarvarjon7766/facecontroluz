@@ -79,22 +79,27 @@ class UserService {
 	}
 	async update(id, data) {
 		try {
-			const user = await userModel.findByIdAndUpdate(id, data, { new: true })
+			const saltRounds = 10
+			let updateData = { ...data }
+			if (data.password) {
+				const hashedPassword = await bcrypt.hash(data.password, saltRounds)
+				updateData.password = hashedPassword
+			}
+			const user = await userModel.findByIdAndUpdate(id, updateData, { new: true })
 			if (user) {
-				console.log(user)
 				return { success: true, message: "Xodimning ma'lumotlari yangilandi" }
 			} else {
-				return { success: false, message: "Xodimning ma'lumotlarini yangilashda xatolik" }
+				return { success: false, message: "Xodim topilmadi yoki yangilanmadi" }
 			}
-
 		} catch (error) {
 			return {
 				success: false,
 				message: "Serverda xatolik yuz berdi",
-				error: error.message
+				error: error.message,
 			}
 		}
 	}
+
 	async updatepost(id, data) {
 		try {
 			const user = await userModel.findByIdAndUpdate(id, data, { new: true })

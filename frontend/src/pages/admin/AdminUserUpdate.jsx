@@ -130,14 +130,14 @@ const AdminUserUpdate = ({ user, onClose, departments }) => {
 				}
 			})
 
+			// Agar password bo'sh bo'lsa, uni FormData-dan olib tashlaymiz
+			if (!userData.password) {
+				formData.delete('password')
+			}
+
 			// Add image file if selected
 			if (imageFile) {
 				formData.append('image', imageFile)
-			}
-
-			// If password is empty, don't send it (to avoid overwriting with empty)
-			if (!userData.password) {
-				formData.delete('password')
 			}
 
 			const res = await axios.put(
@@ -163,9 +163,6 @@ const AdminUserUpdate = ({ user, onClose, departments }) => {
 			setLoading(false)
 		}
 	}
-
-
-
 
 	return (
 		<div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">

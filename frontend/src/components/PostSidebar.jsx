@@ -67,7 +67,7 @@ const PostSidebar = () => {
         </Link>
       </nav>
 
-      <div className="mt-auto">
+      {/* <div className="mt-auto">
         <button
           onClick={handleLogout}
           className="flex items-center w-full p-3 rounded-lg hover:bg-red-50 cursor-pointer hover:text-red-600 transition-colors group"
@@ -75,7 +75,7 @@ const PostSidebar = () => {
           <FiLogOut className="text-gray-500 mr-3 group-hover:text-red-500" />
           <span className="font-medium">Chiqish</span>
         </button>
-      </div>
+      </div> */}
     </aside>
   )
 }

@@ -2,7 +2,7 @@ import axios from 'axios'
 import { useEffect, useState } from 'react'
 import { FiDownload, FiEdit, FiFilter, FiPlus, FiSearch } from 'react-icons/fi'
 import { ToastContainer, toast } from 'react-toastify'
-import * as XLSX from 'xlsx'
+import * as XLSX from "xlsx-js-style"
 import AdminUserAdd from './AdminUserAdd'
 import AdminUserUpdate from './AdminUserUpdate'
 
@@ -129,6 +129,8 @@ const AdminUsers = () => {
 		}
 	}
 
+
+
 	const exportUsersToExcel = async () => {
 		setExportLoading(true)
 		try {
@@ -139,8 +141,6 @@ const AdminUsers = () => {
 				'Boʻlim': user.department ? user.department.name : "Bo'limsiz",
 				'Hodim ID': user.hodimID || 'Mavjud emas',
 				'Foydalanuvchi nomi': user.username,
-				'Roli': user.role || 'viewer',
-				'Tugʻilgan sana': user.birthday ? new Date(user.birthday).toLocaleDateString('uz-UZ') : 'Mavjud emas',
 				'Shaxsiy telefon': user.phone_personal || 'Mavjud emas',
 				'Ish telefon': user.phone_work || 'Mavjud emas',
 				'Holati': getStatusText(user.attendanceStatus || 'Nomaʼlum'),
@@ -150,33 +150,65 @@ const AdminUsers = () => {
 				'Komentariya': user.comment || ''
 			}))
 
-			const wscols = [
-				{ wch: 5 },   
-				{ wch: 25 },
-				{ wch: 25 }, 
-				{ wch: 20 }, 
-				{ wch: 15 }, 
-				{ wch: 20 }, 
-				{ wch: 15 }, 
-				{ wch: 15 }, 
-				{ wch: 15 }, 
-				{ wch: 15 },  
-				{ wch: 15 }, 
-				{ wch: 15 }, 
-				{ wch: 15 }, 
-				{ wch: 15 },  
-				{ wch: 30 }  
+			const ws = XLSX.utils.json_to_sheet(exportData)
+
+			// ustun kengliklari
+			ws['!cols'] = [
+				{ wch: 5 }, { wch: 25 }, { wch: 25 }, { wch: 20 }, { wch: 15 },
+				{ wch: 20 }, { wch: 15 }, { wch: 15 }, { wch: 15 }, { wch: 15 },
+				{ wch: 15 }, { wch: 15 }, { wch: 15 }, { wch: 15 }, { wch: 30 }
 			]
 
-			const ws = XLSX.utils.json_to_sheet(exportData)
-			ws['!cols'] = wscols
+			// header (birinchi qator) uchun style
+			const headerStyle = {
+				font: { bold: true, sz: 12, color: { rgb: "FFFFFF" } },
+				fill: { fgColor: { rgb: "4F81BD" } },
+				alignment: { horizontal: "center", vertical: "center" },
+				border: {
+					top: { style: "thin", color: { rgb: "000000" } },
+					bottom: { style: "thin", color: { rgb: "000000" } },
+					left: { style: "thin", color: { rgb: "000000" } },
+					right: { style: "thin", color: { rgb: "000000" } }
+				}
+			}
 
+			// oddiy kataklar uchun style
+			const cellStyle = {
+				alignment: { horizontal: "center", vertical: "center", wrapText: true },
+				border: {
+					top: { style: "thin", color: { rgb: "CCCCCC" } },
+					bottom: { style: "thin", color: { rgb: "CCCCCC" } },
+					left: { style: "thin", color: { rgb: "CCCCCC" } },
+					right: { style: "thin", color: { rgb: "CCCCCC" } }
+				}
+			}
+
+			// barcha qatorlarni style bilan o‘rash
+			const range = XLSX.utils.decode_range(ws['!ref'])
+			for (let R = range.s.r; R <= range.e.r; ++R) {
+				for (let C = range.s.c; C <= range.e.c; ++C) {
+					const cellRef = XLSX.utils.encode_cell({ r: R, c: C })
+					if (!ws[cellRef]) continue
+
+					if (R === 0) {
+						// header
+						ws[cellRef].s = headerStyle
+					} else {
+						// oddiy katak
+						ws[cellRef].s = cellStyle
+					}
+				}
+			}
+
+			// workbook yaratish
 			const wb = XLSX.utils.book_new()
 			XLSX.utils.book_append_sheet(wb, ws, "Xodimlar")
 
+			// fayl nomi
 			const fileName = `xodimlar_${new Date().toISOString().slice(0, 10)}.xlsx`
 			XLSX.writeFile(wb, fileName)
-			toast.success("Excel fayliga yuklandi!")
+
+			toast.success("Excel fayliga chiroyli dizayn bilan yuklandi!")
 		} catch (error) {
 			toast.error("Export qilishda xatolik")
 			console.error("Excel export error:", error)
@@ -184,6 +216,7 @@ const AdminUsers = () => {
 			setExportLoading(false)
 		}
 	}
+
 
 	return (
 		<div className="p-4 md:p-6 bg-gray-50 min-h-screen">

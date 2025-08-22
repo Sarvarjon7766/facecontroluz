@@ -77,8 +77,6 @@ class UserController {
 	async update(req, res) {
 		try {
 			const updateData = { ...req.body, faceDetection: null }
-
-			// Faqat yangi rasm bo'lsa photo maydonini yangilash
 			if (req.file) {
 				updateData.photo = req.file.filename
 			}
